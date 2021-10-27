@@ -47,29 +47,62 @@ class _HomeScreenState extends State<HomeScreen> {
     bool isLoading = context.watch<PostProvider>().isLoading;
     return Scaffold(
       appBar: AppBar(
-        title: Text("MVVM API"),
+        centerTitle: true,
+        title: const Text(
+          "PixaBay",
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Column(
         children: [
-          TextField(
-            controller: _controller,
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              decoration: InputDecoration(
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10.0),
+                    ),
+                  ),
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        if (_controller.text.isNotEmpty) {
+                          context
+                              .read<PostProvider>()
+                              .getPostList(_controller.text);
+                          _controller.clear();
+                        }
+                      },
+                      icon: const Icon(Icons.search))),
+              controller: _controller,
+            ),
           ),
-          TextButton(
-              onPressed: () {
-                if (_controller.text.isNotEmpty) {
-                  context.read<PostProvider>().getPostList(_controller.text);
-                  _controller.clear();
-                }
-              },
-              child: const Text("search")),
+          const Text("Create By sunmkim"),
+          const SizedBox(
+            height: 16,
+          ),
           isLoading
-              ? const CircularProgressIndicator()
+              ? const Center(child: CircularProgressIndicator())
               : Expanded(
-                  child: ListView(
+                  child: GridView(
+                    padding: const EdgeInsets.all(16.0),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16),
                     children: posts
                         .map((post) => Container(
-                              height: 50.0,
-                              child: Text(post.tags),
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(post.previewURL)),
+                                borderRadius:
+                                   const BorderRadius.all(Radius.circular(16.0)),
+                              ),
+                              height: 100.0,
                             ))
                         .toList(),
                   ),
